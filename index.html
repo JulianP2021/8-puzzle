@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>8-Puzzle (Drag Blank)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>8-Puzzle</h1>
+      <p class="subtitle">Drag the empty tile into an adjacent tile to slide it.</p>
+    </header>
+
+    <main>
+      <section class="game">
+        <div id="board" class="board" role="application" aria-label="8 puzzle board"></div>
+
+        <div class="controls">
+          <button id="resetBtn" type="button">Reset</button>
+          <button id="hintBtn" type="button">Hint</button>
+        </div>
+      </section>
+
+      <div id="winOverlay" class="overlay" aria-hidden="true">
+        <div class="win-card" role="dialog" aria-modal="true">
+          <h2>🎉 You win!</h2>
+          <p>Nice — the puzzle is solved.</p>
+          <div class="win-actions">
+            <button id="playAgain">Play again</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="solver.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
