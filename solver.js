@@ -5,7 +5,8 @@
  */
 function generateEdgesForNode(node) {
 	const edges = new Set();
-	const strNode = node.toString();
+	// Ensure we always work with a 9-character representation (preserve leading zeros)
+	const strNode = node.toString().padStart(9, "0");
 	const zeroIndex = strNode.indexOf("0");
 	const row = Math.floor(zeroIndex / 3);
 	const col = zeroIndex % 3;
@@ -67,19 +68,11 @@ function setupGraph() {
 									alreadyUsed.add(p);
 									for (let q = 0; q <= 8; q++) {
 										if (alreadyUsed.has(q)) continue;
-										nodes.set(
-											parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10),
-											{ visited: false, parent: null }
-										);
-										edges.set(
-											parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10),
-											generateEdgesForNode(
-												parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10)
-											)
-										);
-                                        edgesCount+= generateEdgesForNode(
-                                            parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10)
-                                        ).size;
+										const nodeKey = parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10);
+										nodes.set(nodeKey, { visited: false, parent: null });
+										const neighbors = generateEdgesForNode(nodeKey);
+										edges.set(nodeKey, neighbors);
+										edgesCount += neighbors.size;
 									}
 									alreadyUsed.delete(p);
 								}
@@ -97,6 +90,8 @@ function setupGraph() {
 		}
 		alreadyUsed.delete(i);
 	}
+	console.log(`Total number of nodes: ${nodes.size}`);
+	
     console.log(`Total edges generated: ${edgesCount}`);
 
 	return { nodes, edges };
