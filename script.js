@@ -2,6 +2,8 @@
 // Dragging the blank onto an adjacent tile swaps them. When board is solved,
 // a winning animation/overlay is shown. No solvability checks included.
 
+import { solvePuzzle } from "./solver.js";
+
 /** @type {HTMLElement|null} */
 const boardEl = document.getElementById("board");
 /** @type {HTMLElement|null} */

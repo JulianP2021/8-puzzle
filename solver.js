@@ -1,3 +1,6 @@
+import { PriorityQueue } from "@datastructures-js/priority-queue";
+
+
 /**
  * Generate all possible edges for a given node in the 8-puzzle.
  * @param {number} node
@@ -69,7 +72,7 @@ function setupGraph() {
 									for (let q = 0; q <= 8; q++) {
 										if (alreadyUsed.has(q)) continue;
 										const nodeKey = parseInt(`${i}${j}${k}${l}${m}${n}${o}${p}${q}`, 10);
-										nodes.set(nodeKey, { visited: false, parent: null });
+										nodes.set(nodeKey, { visited: false, parent: null, distance: Infinity });
 										const neighbors = generateEdgesForNode(nodeKey);
 										edges.set(nodeKey, neighbors);
 										edgesCount += neighbors.size;
@@ -115,18 +118,20 @@ const graph = setupGraph();
  * @param {number} goal
  * @returns {number[] | null}
  */
-function solvePuzzle(start, goal = 123456780) {
-    const queue = [];
-    queue.push(start);
-    console.log(graph.nodes.get(start));
-    
+export function solvePuzzle(start, goal = 123456780) {
+	const queue = new PriorityQueue((a, b) => {
+		if (a[1] <= b[1]) return -1;
+		return 1;
+	});
+	queue.enqueue([start, 0]);
     graph.nodes.get(start).visited = true;
-    while (queue.length > 0) {
-        const current = queue.shift();
-        if (current === goal) {
+    while (!queue.isEmpty()) {
+        const current = queue.dequeue();
+		
+        if (current[0] === goal) {
             // Reconstruct path
             const path = [];
-            let step = current;
+            let step = current[0];
             while (step !== null) {
                 path.push(step);
                 step = graph.nodes.get(step).parent;
@@ -134,11 +139,12 @@ function solvePuzzle(start, goal = 123456780) {
             resetGraph(); // Reset graph for future calls
             return path.reverse();
         }
-        for (const neighbor of graph.edges.get(current) || []) {
-            if (!graph.nodes.get(neighbor).visited) {
+        for (const neighbor of graph.edges.get(current[0]) || []) {
+            if (!graph.nodes.get(neighbor).visited && graph.nodes.get(neighbor).distance > current[1] + 1) {
                 graph.nodes.get(neighbor).visited = true;
-                graph.nodes.get(neighbor).parent = current;
-                queue.push(neighbor);
+                graph.nodes.get(neighbor).parent = current[0];
+				graph.nodes.get(neighbor).distance = current[1] + 1;
+                queue.enqueue([neighbor, current[1] + 1]);
             }
         }
     }
