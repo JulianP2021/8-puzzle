@@ -109,6 +109,42 @@ header h1 {
 	display: flex;
 	gap: 10px;
 }
+
+/* Hint box styling - a small toast-like element near the controls */
+.hint-box {
+	min-width: 220px;
+	max-width: 320px;
+	background: rgba(255,255,255,0.06);
+	color: var(--tile);
+	border: 1px solid rgba(255,255,255,0.08);
+	padding: 10px 12px;
+	border-radius: 8px;
+	box-shadow: 0 6px 18px rgba(2,6,23,0.5);
+	transform-origin: top right;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 220ms ease, transform 220ms ease;
+	font-size: 0.95rem;
+	align-self: center;
+}
+.hint-box.visible {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateY(-6px) scale(1);
+}
+.hint-box.hide {
+	opacity: 0;
+	transform: translateY(0) scale(0.98);
+}
+
+.hint-box .close {
+	float: right;
+	background: transparent;
+	border: none;
+	color: rgba(230,236,242,0.7);
+	font-size: 0.9rem;
+	cursor: pointer;
+}
 button {
 	background: black;
 	border: 3px solid var(--accent);

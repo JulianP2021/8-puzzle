@@ -14,6 +14,8 @@ const playAgain = document.getElementById("playAgain");
 const winOverlay = document.getElementById("winOverlay");
 /** @type {HTMLElement|null} */
 const hintBtn = document.getElementById("hintBtn");
+/** @type {HTMLElement|null} */
+const hintBox = document.getElementById("hintBox");
 
 /**
  * Current board state as a length-9 array. 0 === blank.
@@ -199,6 +201,7 @@ function reset() {
 	if (boardEl) boardEl.classList.remove("won");
 	if (winOverlay) winOverlay.classList.remove("visible");
 	if (winOverlay) winOverlay.setAttribute("aria-hidden", "true");
+	_hideHintMessage();
 	render();
 }
 
@@ -211,22 +214,65 @@ function showHint() {
 	const path = solvePuzzle(start, 123456780);
 	if (path) {
         console.log(path);
-		const nextStep = path[1];
+		const nextStep = path[1].toString().padStart(9, "0");
 		const blankPos = board.indexOf(0);
 		if (nextStep) {
-			const nextblankPos = String(nextStep).split("").indexOf("0");
+			const nextblankPos = nextStep.split("").indexOf("0");
 			if (isAdjacent(blankPos, nextblankPos)) {
-				alert(`Hint: Move tile ${board[nextblankPos]} into the blank space.`);
+				const msg = `🔍 Hint: Move tile ${board[nextblankPos]} into the blank space.`;
+				_showHintMessage(msg);
 				return;
 			}
 		} else {
-			alert(
+			_showHintMessage(
 				"Hint: Try to move the tiles in order from 1 to 8, leaving the blank space at the end!"
 			);
 		}
 	} else {
-		alert("No solution found.");
+		_showHintMessage("No solution found.");
 	}
+}
+
+
+/**
+ * Show the hint box with a message. Auto-hides after a few seconds.
+ * @param {string} message
+ * @param {number} [timeout=4000]
+ */
+function _showHintMessage(message, timeout = 4000) {
+	if (!hintBox) {
+		// fallback to alert if DOM element not present
+		alert(message);
+		return;
+	}
+	// set content with a small close button
+	hintBox.innerHTML = `<button class="close" aria-label="Close hint">×</button><div class="hint-text">${message}</div>`;
+	hintBox.classList.remove("hide");
+	hintBox.classList.add("visible");
+	hintBox.setAttribute("aria-hidden", "false");
+
+	// hook up close button
+	const btn = hintBox.querySelector(".close");
+	if (btn) {
+		btn.addEventListener("click", () => {
+			hintBox.classList.remove("visible");
+			hintBox.classList.add("hide");
+			hintBox.setAttribute("aria-hidden", "true");
+		}, { once: true });
+	}
+
+	// auto hide
+	clearTimeout(hintBox._hideTimer);
+	hintBox._hideTimer = setTimeout(() => {
+		
+	}, timeout);
+}
+
+function _hideHintMessage() {
+	if (!hintBox) return;
+	hintBox.classList.remove("visible");
+	hintBox.classList.add("hide");
+	hintBox.setAttribute("aria-hidden", "true");
 }
 
 // wire controls (defensive checks for null elements)

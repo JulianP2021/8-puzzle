@@ -108,6 +108,7 @@ function resetGraph() {
     graph.nodes.forEach((node) => {
         node.visited = false;
         node.parent = null;
+		node.distance = Infinity;
     });
 }
 
@@ -140,15 +141,28 @@ export function solvePuzzle(start, goal = 123456780) {
             return path.reverse();
         }
         for (const neighbor of graph.edges.get(current[0]) || []) {
-            if (!graph.nodes.get(neighbor).visited && graph.nodes.get(neighbor).distance > current[1] + 1) {
+			const newDistance = current[1] + numberOfWrongTiles(neighbor, goal);
+            if (!graph.nodes.get(neighbor).visited && graph.nodes.get(neighbor).distance > newDistance) {
                 graph.nodes.get(neighbor).visited = true;
                 graph.nodes.get(neighbor).parent = current[0];
-				graph.nodes.get(neighbor).distance = current[1] + 1;
-                queue.enqueue([neighbor, current[1] + 1]);
+				graph.nodes.get(neighbor).distance = newDistance;
+                queue.enqueue([neighbor, newDistance]);
             }
         }
     }
     resetGraph(); // Reset graph for future calls
     return null; // No path found
+}
+
+function numberOfWrongTiles(state, goal) {
+	let wrongTiles = 0;
+	const strState = state.toString().padStart(9, "0");
+	const strGoal = goal.toString().padStart(9, "0");
+	for (let i = 0; i < strState.length; i++) {
+		if (strState[i] !== strGoal[i]) {
+			wrongTiles++;
+		}
+	}
+	return wrongTiles;
 }
 
